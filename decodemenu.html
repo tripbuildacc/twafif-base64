@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Tripweb Tools</title>
+<link rel="icon" type="image/png" href="https://tripweb.page.gd/library/weblogo.png"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+html{font-size:16px}
+*{-webkit-text-size-adjust:100%;text-size-adjust:100%;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#1e1e1e;color:#fff;margin:0;padding:0}
+header{background:#2a2a2a;border-bottom:1px solid #3d3d3d;color:#ffcc00;text-align:center;font-weight:600;padding:18px 0;position:sticky;top:0;z-index:1000;font-size:1.3rem}
+.container{max-width:720px;margin:30px auto;padding:0 15px;display:grid;gap:20px;grid-template-columns:1fr;}
+.app{background:#2a2a2a;border:1px solid #3d3d3d;border-radius:12px;padding:16px;font-size:.9rem;position:relative;overflow:hidden}
+.app:hover{border-color:#ffcc00}
+.app-header{display:flex;justify-content:space-between;align-items:flex-start}
+.app-title-wrap{display:flex;align-items:center;gap:8px;flex:1}
+.app-title{font-size:1.1rem;font-weight:600;color:#fff}
+.app-desc{font-size:.8rem;color:#bbb;margin:6px 0;line-height:1.4}
+.label-small{font-size:.85rem;color:#ffcc00;margin:8px 0 4px}
+.textarea, .result {
+  width:100%;
+  min-height:120px;
+  resize:vertical;
+  border-radius:8px;
+  border:1px solid #3d3d3d;
+  background:#131313;
+  color:#fff;
+  padding:10px;
+  font-size:0.95rem;
+}
+.controls {display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
+.btn {background:#ffcc00;color:#111;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:600}
+.btn:active{transform:scale(.98)}
+.small {font-size:0.85rem;padding:6px 10px}
+.note {font-size:0.8rem;color:#999;margin-top:6px}
+</style>
+</head>
+<body>
+<header>Tripweb Tools</header>
+
+<div class="container">
+  <div class="app">
+    <div class="app-header">
+      <div class="app-title-wrap">
+        <div class="app-title">base64 decode menu</div>
+      </div>
+    </div>
+
+    <div class="app-desc">Paste Base64 text, decoded result appears automatically.</div>
+
+    <div class="label-small">Input (Base64)</div>
+    <textarea id="inputText" class="textarea" placeholder="Paste Base64 here..."></textarea>
+
+    <div class="label-small">Result (decoded)</div>
+    <textarea id="resultText" class="result" readonly placeholder="Decoded text will appear here..."></textarea>
+
+    <div class="controls">
+      <button class="btn small" id="copyBtn">Copy</button>
+      <button class="btn small" id="clearBtn">Clear</button>
+    </div>
+
+    <div class="note"></div>
+  </div>
+</div>
+
+<script>
+/* decode UTF-8 safe */
+function base64ToUtf8(str){
+  try{
+    return decodeURIComponent(escape(atob(str)));
+  }catch(e){
+    return '';
+  }
+}
+
+const input = document.getElementById('inputText');
+const result = document.getElementById('resultText');
+const copyBtn = document.getElementById('copyBtn');
+const clearBtn = document.getElementById('clearBtn');
+
+function update(){
+  const v = input.value || '';
+  result.value = base64ToUtf8(v);
+}
+
+input.addEventListener('input', update);
+
+copyBtn.addEventListener('click', async () => {
+  try{
+    await navigator.clipboard.writeText(result.value);
+    copyBtn.textContent = 'Copied';
+    setTimeout(()=>copyBtn.textContent='Copy',1000);
+  }catch(e){
+    result.select();
+    document.execCommand('copy');
+    copyBtn.textContent = 'Copied';
+    setTimeout(()=>copyBtn.textContent='Copy',1000);
+  }
+});
+
+clearBtn.addEventListener('click', () => {
+  input.value = '';
+  update();
+  input.focus();
+});
+
+update();
+</script>
+
+</body>
+</html>
